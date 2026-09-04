@@ -48,6 +48,21 @@ public final class ShaderPipelineCompat {
         }
     }
 
+    /**
+     * @return true if the installed renderer draws the bloom {@code BlockRenderLayer} itself, so GregTech should keep
+     *         emitting emissive geometry into that layer instead of folding it into the fallback layer.
+     *         <p>
+     *         This is a different question from {@link #isShaderPackActive()}. That one asks "is something else in
+     *         charge of lighting and post-processing" — true for Yumelium, and it correctly stops us binding our own
+     *         bloom framebuffer inside someone else's deferred pipeline. But it also used to suppress the bloom
+     *         <em>layer</em>, which threw the emissive geometry in with ordinary cutout quads and made it
+     *         unidentifiable. Yumelium maps the layer to its own render pass and tags it emissive for the shader pack,
+     *         so it wants the geometry; it just does not want our post-processing.
+     */
+    public static boolean rendererDrawsBloomLayer() {
+        return FMLCommonHandler.instance().getSide().isClient() && Mods.Yumelium.isModLoaded();
+    }
+
     private static Method resolve() {
         if (!resolved) {
             resolved = true;

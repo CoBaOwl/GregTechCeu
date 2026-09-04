@@ -2,6 +2,7 @@ package gregtech.client.utils;
 
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.util.Mods;
+import gregtech.api.util.ShaderPipelineCompat;
 import gregtech.client.particle.GTParticle;
 import gregtech.client.renderer.IRenderSetup;
 import gregtech.client.shader.Shaders;
@@ -83,6 +84,7 @@ public class BloomEffectUtil {
      */
     @Contract("null -> _; !null -> !null")
     public static BlockRenderLayer getEffectiveBloomLayer(BlockRenderLayer fallback) {
+        if (ShaderPipelineCompat.rendererDrawsBloomLayer()) return bloom;
         return Mods.ShadersMod.isModLoaded() ? fallback : bloom;
     }
 
@@ -115,7 +117,9 @@ public class BloomEffectUtil {
      */
     @Contract("_, null -> _; _, !null -> !null")
     public static BlockRenderLayer getEffectiveBloomLayer(boolean isBloomActive, BlockRenderLayer fallback) {
-        return Mods.ShadersMod.isModLoaded() || !isBloomActive ? fallback : bloom;
+        if (!isBloomActive) return fallback;
+        if (ShaderPipelineCompat.rendererDrawsBloomLayer()) return bloom;
+        return Mods.ShadersMod.isModLoaded() ? fallback : bloom;
     }
 
     /**
