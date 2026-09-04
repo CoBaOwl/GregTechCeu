@@ -79,6 +79,7 @@ public enum Mods {
     VoxelMap(Names.VOXEL_MAP),
     XaerosMinimap(Names.XAEROS_MINIMAP),
     Vintagium(Names.VINTAGIUM),
+    Yumelium(Names.YUMELIUM),
     Alfheim(Names.ALFHEIM),
     ModNameTooltip(Names.MOD_NAME_TOOLTIP),
 
@@ -94,13 +95,17 @@ public enum Mods {
         }
     },
 
-    // Special Optifine shader handler, but consolidated here for simplicity
+    // Special shader handler, but consolidated here for simplicity.
+    // True whenever *some* external shader pipeline is driving the world render: OptiFine's ShadersMod, or a
+    // standalone Iris/Oculus back-port such as Yumelium. Every caller uses this to mean "a shader pack owns
+    // lighting and post-processing, so stand down" - see ShaderPipelineCompat.
     ShadersMod(null) {
 
         @Override
         public boolean isModLoaded() {
             // Check shader pack state at real time instead of caching it
-            return OptiFine.isModLoaded() && Shaders.shaderPackLoaded;
+            return (OptiFine.isModLoaded() && Shaders.shaderPackLoaded) ||
+                    ShaderPipelineCompat.isShaderPackActive();
         }
     };
 
@@ -156,6 +161,7 @@ public enum Mods {
         public static final String VOXEL_MAP = "voxelmap";
         public static final String XAEROS_MINIMAP = "xaerominimap";
         public static final String VINTAGIUM = "vintagium";
+        public static final String YUMELIUM = "yumelium";
         public static final String ALFHEIM = "alfheim";
         public static final String MOD_NAME_TOOLTIP = "modnametooltip";
     }
