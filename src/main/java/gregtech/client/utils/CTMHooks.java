@@ -2,6 +2,7 @@ package gregtech.client.utils;
 
 import gregtech.api.util.GTLog;
 import gregtech.api.util.Mods;
+import gregtech.api.util.ShaderPipelineCompat;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -36,7 +37,10 @@ public class CTMHooks {
     public static ThreadLocal<Boolean> ENABLE = new ThreadLocal<>();
 
     public static boolean checkLayerWithOptiFine(boolean canRenderInLayer, byte layers, BlockRenderLayer layer) {
-        if (Mods.ShadersMod.isModLoaded()) {
+        // Only OptiFine needs the bloom layer folded away. A renderer that draws the bloom layer itself (Yumelium)
+        // must keep it — otherwise the geometry lands in neither layer, since for it getBloomLayer() and
+        // getEffectiveBloomLayer() are the same layer and the "move it elsewhere" branch below is unreachable.
+        if (Mods.ShadersMod.isModLoaded() && !ShaderPipelineCompat.rendererDrawsBloomLayer()) {
             if (canRenderInLayer) {
                 if (layer == BloomEffectUtil.getBloomLayer()) return false;
             } else if ((layers >> BloomEffectUtil.getBloomLayer().ordinal() & 1) == 1 &&
@@ -50,7 +54,8 @@ public class CTMHooks {
     public static List<BakedQuad> getQuadsWithOptiFine(List<BakedQuad> ret, BlockRenderLayer layer,
                                                        IBakedModel bakedModel, IBlockState state, EnumFacing side,
                                                        long rand) {
-        if (Mods.ShadersMod.isModLoaded() && CTMHooks.ENABLE.get() == null) {
+        if (Mods.ShadersMod.isModLoaded() && !ShaderPipelineCompat.rendererDrawsBloomLayer()
+                && CTMHooks.ENABLE.get() == null) {
             if (layer == BloomEffectUtil.getBloomLayer()) {
                 return Collections.emptyList();
             } else if (layer == BloomEffectUtil.getEffectiveBloomLayer()) {

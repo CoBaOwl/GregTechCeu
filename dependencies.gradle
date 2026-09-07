@@ -35,13 +35,13 @@ dependencies {
     // Published dependencies
     api("com.cleanroommc:modularui:3.1.6") { transitive = false }
     api("com.cleanroommc:groovyscript:1.4.3") { transitive = false }
-    api("curse.maven:inventory-bogosorter-632327:7102721-deobf-6717233-sources-6717234") // Inventory BogoSorter − v1.5.0
+    api("curse.maven:inventory-bogosorter-632327:8231600-deobf-8231601-sources-8231603") // Inventory BogoSorter − v1.6.1
     api("curse.maven:key-binding-patch-928895:5951859") // Key Binding Patch v1.3.3.3, needed by Inventory BogoSorter v1.5.0+
     api("curse.maven:crafttweaker-239197:5486112")
     api("curse.maven:had-enough-items-557549:5906628")
     api("curse.maven:theoneprobe-245211:2667280")
     api("org.jetbrains:annotations:26.1.0")
-    api(rfg.deobf(project.files("libs/ae2-uel-v0.56.7-5-g26bb598-dev.jar")))
+    api(rfg.deobf(project.files("libs/ae2-uel-v0.56.7-11-g77a0420-dev.jar")))
     api(rfg.deobf(project.files("libs/CodeChickenLib-1.12.2-3.2.3.358-universal.jar")))
     api rfg.deobf("curse.maven:ctm-267602:2915363") // CTM 1.0.2.31
 
