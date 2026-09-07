@@ -435,10 +435,14 @@ public class GTFluidSyncHandler extends SyncHandler {
             FluidStack lockedFluid = getLockedFluid();
             if (lockedFluid == null && heldFluid != null) {
                 lockFluid(heldFluid);
-            } else if (!Objects.equals(heldFluid, lockedFluid)) {
+            } else if (!GTUtility.areFluidStacksEqual(heldFluid, lockedFluid)) {
                 return ItemStack.EMPTY;
             }
         }
+
+        // the container holds the same fluid as the tank and still has room for more of it
+        boolean canTopUpContainer = heldFluid != null && heldFluid.isFluidEqual(tankFluid) &&
+                fluidHandlerItem.fill(tankFluid, false) > 0;
 
         ItemStack returnable = ItemStack.EMPTY;
 
@@ -450,7 +454,11 @@ public class GTFluidSyncHandler extends SyncHandler {
         } else if (canDrainSlot && heldFluid == null) {
             returnable = drainTankIntoStack(fluidHandlerItem, tankFluid, tryFillAll);
 
-            // neither is empty but tank is not full, try to fill tank
+            // container takes more of the same fluid, top it up before considering the tank
+        } else if (canDrainSlot && canTopUpContainer) {
+            returnable = drainTankIntoStack(fluidHandlerItem, tankFluid, tryFillAll);
+
+            // container is full or holds another fluid, try to empty it into the tank
         } else if (canFillSlot && tank.getFluidAmount() < tank.getCapacity() && heldFluid != null) {
             returnable = fillTankFromStack(fluidHandlerItem, heldFluid, tryFillAll);
         }
